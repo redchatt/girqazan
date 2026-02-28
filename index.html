@@ -3,79 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Səhifəsi</title>
+    <title>Giriş Paneli</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #1a1a2e; color: white; }
-        .container { text-align: center; }
-        .main-btn { padding: 15px 30px; margin: 10px; font-size: 18px; cursor: pointer; border: none; border-radius: 10px; color: white; font-weight: bold; width: 250px; display: block; }
-        .btn-1 { background: #27ae60; }
-        .btn-2 { background: #2980b9; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; color: #333; padding: 20px; border-radius: 15px; max-width: 350px; width: 90%; text-align: center; }
-        .instruction-img { width: 100%; border-radius: 8px; margin-bottom: 10px; border: 1px solid #ccc; }
-        .nav-btn { padding: 10px 20px; background: #e67e22; color: white; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 10px; cursor: pointer; border: none; }
-        .hidden { display: none; }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #0f172a; color: white; }
+        .container { text-align: center; padding: 20px; }
+        .main-btn { padding: 18px 40px; margin: 15px auto; font-size: 18px; cursor: pointer; border: none; border-radius: 12px; color: white; font-weight: bold; display: block; width: 280px; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-1 { background: #10b981; }
+        .btn-2 { background: #3b82f6; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; color: #1e293b; padding: 25px; border-radius: 20px; max-width: 400px; width: 90%; text-align: center; }
+        .instruction-img { width: 100%; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; max-height: 380px; object-fit: contain; }
+        .instruction-text { font-size: 17px; margin-bottom: 20px; font-weight: 600; line-height: 1.5; }
+        .nav-btn { padding: 12px 25px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; text-decoration: none; display: inline-block; color: white; }
+        .next-btn { background: #475569; }
+        .go-btn { background: #f59e0b; }
+        .close-x { position: absolute; top: 15px; right: 20px; font-size: 28px; color: #64748b; cursor: pointer; font-weight: bold; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>Xoş Gəlmisiniz</h1>
-        <button class="main-btn btn-1" onclick="openStep(1, 'link1')">Keçid 1</button>
-        <button class="main-btn btn-2" onclick="openStep(1, 'link2')">Keçid 2</button>
+        <button class="main-btn btn-1" onclick="openM('1')">Keçid 1</button>
+        <button class="main-btn btn-2" onclick="openM('2')">Keçid 2</button>
+        
+        <div style="margin-top: 50px; opacity: 0.6; font-size: 13px;">
+            Giriş sayı: <br>
+            <img src="https://profile-counter.glitch.me/bishir-site-count/count.svg" alt="saygac">
+        </div>
     </div>
 
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <div id="contentBox"></div>
-            <button id="nextBtn" class="nav-btn" onclick="nextStep()">Növbəti addım</button>
-            <a id="finalBtn" href="" class="nav-btn hidden" target="_blank">Davam et</a>
-            <p onclick="closeModal()" style="color: #999; cursor: pointer; margin-top: 15px;">Bağla</p>
+    <div id="guideModal" class="modal">
+        <div class="modal-content" style="position: relative;">
+            <span class="close-x" onclick="closeM()">&times;</span>
+            <div id="imgContainer"></div>
+            <p id="guideText" class="instruction-text"></p>
+            
+            <a id="btnDown" href="https://play.google.com/store/apps/details?id=com.bishir.bishir" target="_blank" class="nav-btn go-btn hidden">Yüklə</a>
+            <button id="btnNext" class="nav-btn next-btn hidden" onclick="nextStep()">Növbəti addım</button>
+            <a id="btnFinal" href="https://bishir.app/profiles/username/skwjrj" target="_blank" class="nav-btn go-btn hidden">Profilə keçid et</a>
         </div>
     </div>
 
     <script>
-        let currentStep = 1;
-        let currentMode = '';
+        const modal = document.getElementById('guideModal');
+        const text = document.getElementById('guideText');
+        const imgCont = document.getElementById('imgContainer');
+        const btnDown = document.getElementById('btnDown');
+        const btnNext = document.getElementById('btnNext');
+        const btnFinal = document.getElementById('btnFinal');
 
-        function openStep(step, mode) {
-            currentStep = step;
-            currentMode = mode;
-            document.getElementById('myModal').style.display = 'flex';
-            updateModal();
+        let step = 1;
+
+        function openM(type) {
+            imgCont.innerHTML = "";
+            btnDown.classList.add('hidden');
+            btnNext.classList.add('hidden');
+            btnFinal.classList.add('hidden');
+
+            if (type === '1') {
+                text.innerText = "Ekranda çıxan proqramı yükləyin və quraşdırın.";
+                btnDown.classList.remove('hidden');
+            } else {
+                step = 1;
+                updateStep();
+                btnNext.classList.remove('hidden');
+            }
+            modal.style.display = 'flex';
         }
 
-        function updateModal() {
-            const box = document.getElementById('contentBox');
-            const next = document.getElementById('nextBtn');
-            const final = document.getElementById('finalBtn');
-            
-            next.classList.add('hidden');
-            final.classList.add('hidden');
+        function updateStep() {
+            btnNext.classList.add('hidden');
+            btnFinal.classList.add('hidden');
 
-            if (currentMode === 'link1') {
-                box.innerHTML = '<p>Ekranda çıxan proqramı yükləyin.</p>';
-                final.href = 'https://play.google.com/store/apps/details?id=com.bishir.bishir';
-                final.innerText = 'Yüklə';
-                final.classList.remove('hidden');
-            } else {
-                if (currentStep === 1) {
-                    box.innerHTML = '<img src="telimat1.jpg" class="instruction-img"><p>Ekranda olan səhifəni axtarışa verib işarələnən posta girin.</p>';
-                    next.classList.remove('hidden');
-                } else if (currentStep === 2) {
-                    box.innerHTML = '<img src="telimat2.jpg" class="instruction-img"><p>İşarələnən hədiyyə qutusuna giriş edin.</p>';
-                    next.classList.remove('hidden');
-                } else if (currentStep === 3) {
-                    box.innerHTML = '<img src="telimat3.jpg" class="instruction-img"><p>Ekranda işarələnən hədiyyəni göndərin.</p>';
-                    final.href = 'https://bishir.app/profiles/username/skwjrj';
-                    final.innerText = 'Profilə keçid et';
-                    final.classList.remove('hidden');
-                }
+            if (step === 1) {
+                imgCont.innerHTML = '<img src="photo_2026-02-28_20-59-56.jpg" class="instruction-img">';
+                text.innerText = "Ekranda olan səhifəni axtarışa verib işarələnən posta girin.";
+                btnNext.classList.remove('hidden');
+            } else if (step === 2) {
+                imgCont.innerHTML = '<img src="photo_2026-02-28_21-01-22.jpg" class="instruction-img">';
+                text.innerText = "İşarələnən hədiyyə qutusuna giriş edin.";
+                btnNext.classList.remove('hidden');
+            } else if (step === 3) {
+                imgCont.innerHTML = '<img src="photo_2026-02-28_21-02-43.jpg" class="instruction-img">';
+                text.innerText = "Ekranda işarələnən hədiyyəni (dondurmanı) göndərin.";
+                btnFinal.classList.remove('hidden');
             }
         }
 
-        function nextStep() { currentStep++; updateModal(); }
-        function closeModal() { document.getElementById('myModal').style.display = 'none'; }
+        function nextStep() { step++; updateStep(); }
+        function closeM() { modal.style.display = 'none'; }
+        window.onclick = function(e) { if(e.target == modal) closeM(); }
     </script>
 </body>
 </html>
