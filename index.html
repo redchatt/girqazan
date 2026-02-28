@@ -3,104 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Paneli</title>
+    <title>Giriş Səhifəsi</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #0f0f1a; color: white; }
-        .container { text-align: center; padding: 20px; }
-        h1 { margin-bottom: 30px; }
-        .main-btn { padding: 18px 40px; margin: 15px auto; font-size: 18px; cursor: pointer; border: none; border-radius: 50px; color: white; font-weight: bold; display: block; width: 280px; transition: 0.3s; }
-        .btn-1 { background: linear-gradient(45deg, #27ae60, #2ecc71); }
-        .btn-2 { background: linear-gradient(45deg, #2980b9, #3498db); }
-        
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; color: #333; padding: 20px; border-radius: 20px; max-width: 400px; width: 90%; text-align: center; position: relative; }
-        .instruction-img { width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid #ddd; max-height: 350px; object-fit: contain; }
-        .instruction-text { font-size: 17px; margin-bottom: 20px; font-weight: 600; }
-        .nav-btn { padding: 12px 25px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; text-decoration: none; display: inline-block; }
-        .next-btn { background: #34495e; color: white; }
-        .go-btn { background: #e67e22; color: white; }
-        .close-x { position: absolute; top: 10px; right: 15px; font-size: 24px; color: #999; cursor: pointer; }
-        .hidden { display: none !important; }
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #1a1a2e; color: white; }
+        .container { text-align: center; }
+        .main-btn { padding: 15px 30px; margin: 10px; font-size: 18px; cursor: pointer; border: none; border-radius: 10px; color: white; font-weight: bold; width: 250px; display: block; }
+        .btn-1 { background: #27ae60; }
+        .btn-2 { background: #2980b9; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; color: #333; padding: 20px; border-radius: 15px; max-width: 350px; width: 90%; text-align: center; }
+        .instruction-img { width: 100%; border-radius: 8px; margin-bottom: 10px; border: 1px solid #ccc; }
+        .nav-btn { padding: 10px 20px; background: #e67e22; color: white; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 10px; cursor: pointer; border: none; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>Xoş Gəlmisiniz</h1>
-        <button class="main-btn btn-1" onclick="openModal('1')">Keçid 1</button>
-        <button class="main-btn btn-2" onclick="openModal('2')">Keçid 2</button>
-        
-        <div style="margin-top: 40px; opacity: 0.5; font-size: 12px;">
-            Ziyarətçi sayı: <br>
-            <img src="https://profile-counter.glitch.me/bishir-user/count.svg" alt="visitor count">
-        </div>
+        <button class="main-btn btn-1" onclick="openStep(1, 'link1')">Keçid 1</button>
+        <button class="main-btn btn-2" onclick="openStep(1, 'link2')">Keçid 2</button>
     </div>
 
-    <div id="guideModal" class="modal">
+    <div id="myModal" class="modal">
         <div class="modal-content">
-            <span class="close-x" onclick="closeModal()">&times;</span>
-            <div id="imgBox"></div>
-            <p id="guideText" class="instruction-text"></p>
-            <a id="btnDownload" href="https://play.google.com/store/apps/details?id=com.bishir.bishir" target="_blank" class="nav-btn go-btn hidden">Yüklə</a>
-            <button id="btnNext" class="nav-btn next-btn hidden" onclick="nextStep()">Növbəti addım</button>
-            <a id="btnFinal" href="https://bishir.app/profiles/username/skwjrj" target="_blank" class="nav-btn go-btn hidden">Profilə keçid et</a>
+            <div id="contentBox"></div>
+            <button id="nextBtn" class="nav-btn" onclick="nextStep()">Növbəti addım</button>
+            <a id="finalBtn" href="" class="nav-btn hidden" target="_blank">Davam et</a>
+            <p onclick="closeModal()" style="color: #999; cursor: pointer; margin-top: 15px;">Bağla</p>
         </div>
     </div>
 
     <script>
-        const modal = document.getElementById('guideModal');
-        const gText = document.getElementById('guideText');
-        const imgBox = document.getElementById('imgBox');
-        const btnDownload = document.getElementById('btnDownload');
-        const btnNext = document.getElementById('btnNext');
-        const btnFinal = document.getElementById('btnFinal');
+        let currentStep = 1;
+        let currentMode = '';
 
-        // Sənin göndərdiyin şəkillərin birbaşa linkləri
-        const images = [
-            "https://i.ibb.co/S7mS2Xp0/photo-2026-02-28-20-59-56.jpg",
-            "https://i.ibb.co/RkTfC7L6/photo-2026-02-28-21-01-22.jpg",
-            "https://i.ibb.co/3mS7Xh76/photo-2026-02-28-21-02-43.jpg"
-        ];
+        function openStep(step, mode) {
+            currentStep = step;
+            currentMode = mode;
+            document.getElementById('myModal').style.display = 'flex';
+            updateModal();
+        }
 
-        let step = 1;
+        function updateModal() {
+            const box = document.getElementById('contentBox');
+            const next = document.getElementById('nextBtn');
+            const final = document.getElementById('finalBtn');
+            
+            next.classList.add('hidden');
+            final.classList.add('hidden');
 
-        function openModal(type) {
-            imgBox.innerHTML = "";
-            btnDownload.classList.add('hidden');
-            btnNext.classList.add('hidden');
-            btnFinal.classList.add('hidden');
-
-            if (type === '1') {
-                gText.innerText = "Ekranda çıxan proqramı yükləyin və quraşdırın.";
-                btnDownload.classList.remove('hidden');
+            if (currentMode === 'link1') {
+                box.innerHTML = '<p>Ekranda çıxan proqramı yükləyin.</p>';
+                final.href = 'https://play.google.com/store/apps/details?id=com.bishir.bishir';
+                final.innerText = 'Yüklə';
+                final.classList.remove('hidden');
             } else {
-                step = 1;
-                showStep();
-            }
-            modal.style.display = 'flex';
-        }
-
-        function showStep() {
-            btnNext.classList.add('hidden');
-            btnFinal.classList.add('hidden');
-
-            if (step === 1) {
-                imgBox.innerHTML = `<img src="${images[0]}" class="instruction-img">`;
-                gText.innerText = "Ekranda olan səhifəni axtarışa verib işarələnən posta girin.";
-                btnNext.classList.remove('hidden');
-            } else if (step === 2) {
-                imgBox.innerHTML = `<img src="${images[1]}" class="instruction-img">`;
-                gText.innerText = "İşarələnən hədiyyə qutusuna giriş edin.";
-                btnNext.classList.remove('hidden');
-            } else if (step === 3) {
-                imgBox.innerHTML = `<img src="${images[2]}" class="instruction-img">`;
-                gText.innerText = "Ekranda işarələnən hədiyyəni göndərin.";
-                btnFinal.classList.remove('hidden');
+                if (currentStep === 1) {
+                    box.innerHTML = '<img src="telimat1.jpg" class="instruction-img"><p>Ekranda olan səhifəni axtarışa verib işarələnən posta girin.</p>';
+                    next.classList.remove('hidden');
+                } else if (currentStep === 2) {
+                    box.innerHTML = '<img src="telimat2.jpg" class="instruction-img"><p>İşarələnən hədiyyə qutusuna giriş edin.</p>';
+                    next.classList.remove('hidden');
+                } else if (currentStep === 3) {
+                    box.innerHTML = '<img src="telimat3.jpg" class="instruction-img"><p>Ekranda işarələnən hədiyyəni göndərin.</p>';
+                    final.href = 'https://bishir.app/profiles/username/skwjrj';
+                    final.innerText = 'Profilə keçid et';
+                    final.classList.remove('hidden');
+                }
             }
         }
 
-        function nextStep() { step++; showStep(); }
-        function closeModal() { modal.style.display = 'none'; }
+        function nextStep() { currentStep++; updateModal(); }
+        function closeModal() { document.getElementById('myModal').style.display = 'none'; }
     </script>
 </body>
 </html>
